@@ -1,0 +1,102 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
+  email               String    @unique
+  password            String
+  passwordResetOtp    String?
+  passwordResetExpiry DateTime?
+  
+  // Relationships
+  batches             Batch[]
+  links               Link[]
+  tags                Tag[]     // Add this line
+  
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+model Batch {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  links       Link[]
+  userId      String    @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([name, userId])
+}
+
+model Tag {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  name   String
+  links  Link[] @relation(fields: [linkIds], references: [id])
+  linkIds String[] @db.ObjectId
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  
+  @@unique([name, userId])
+}
+
+model Link {
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  shortCode   String         @unique
+  redirectTo  String
+  visibility  LinkVisibility @default(PRIVATE)
+  isPaused    Boolean        @default(false)
+  activeFrom  DateTime?
+  activeUntil DateTime?
+  clickCount  Int            @default(0) // Still useful for a quick overview
+
+  // New fields for OG tags
+  ogTitle       String?
+  ogDescription String?
+  ogImageUrl    String?
+
+  // Relationships
+  clicks      Click[]      // Add this line
+  tags        Tag[]        @relation(fields: [tagIds], references: [id])
+  tagIds      String[]     @db.ObjectId
+  
+  batchId     String?      @db.ObjectId
+  batch       Batch?       @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  
+  userId      String       @db.ObjectId
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Click {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  clickedAt DateTime @default(now())
+  ipAddress String?
+  userAgent String?
+  referrer  String?
+  country   String?
+  
+  linkId    String   @db.ObjectId
+  link      Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
+}
+
+enum LinkVisibility {
+  PUBLIC
+  PRIVATE
+  SHARE
+}
