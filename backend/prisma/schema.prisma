@@ -55,13 +55,18 @@ model Tag {
 model Link {
   id          String         @id @default(auto()) @map("_id") @db.ObjectId
   name        String
-  shortCode   String         @unique
+  shortCode   String         
   redirectTo  String
   visibility  LinkVisibility @default(PRIVATE)
   isPaused    Boolean        @default(false)
   activeFrom  DateTime?
   activeUntil DateTime?
   clickCount  Int            @default(0) // Still useful for a quick overview
+
+  useSplashPage       Boolean  @default(false)
+  splashPageDuration  Int      @default(3)    // Duration in seconds
+  splashPageDesign    String   @default("minimal") // e.g., "minimal", "branded"
+
 
   // New fields for OG tags
   ogTitle       String?

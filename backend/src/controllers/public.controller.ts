@@ -4,29 +4,33 @@ import * as geoip from 'geoip-lite';
 
 const prisma = new PrismaClient();
 
-// @desc    Redirect short link, track click, and forward to the frontend splash page
+// @desc    Redirect short link, track click, and handle splash pages
 // @route   GET /{shortCode}
 export const handleRedirect = async (req: Request, res: Response) => {
     const { shortCode } = req.params;
 
     try {
-        const link = await prisma.link.findUnique({
-            where: { shortCode },
+        const now = new Date();
+        
+        // This query correctly finds the one and only active link
+        const link = await prisma.link.findFirst({
+            where: {
+                shortCode,
+                isPaused: false,
+                OR: [
+                    { activeFrom: null, activeUntil: null },
+                    { activeFrom: { lte: now }, activeUntil: null },
+                    { activeFrom: null, activeUntil: { gte: now } },
+                    { activeFrom: { lte: now }, activeUntil: { gte: now } },
+                ],
+            }
         });
 
         if (!link) {
-            return res.status(404).send('Link not found.');
+            return res.status(404).send('Active link not found.');
         }
 
-        // Check if link is active
-        const now = new Date();
-        if (link.isPaused ||
-            (link.activeFrom && link.activeFrom > now) ||
-            (link.activeUntil && link.activeUntil < now)) {
-            return res.status(403).send('This link is currently inactive.');
-        }
-
-        // Track click in the background
+        // --- Click Tracking ---
         (async () => {
             try {
                 const ip = req.ip || '';
@@ -49,23 +53,27 @@ export const handleRedirect = async (req: Request, res: Response) => {
             }
         })();
 
-        // --- UPDATED REDIRECT LOGIC ---
-        // This now redirects to your frontend app's dedicated redirect page.
+        // --- NEW: DYNAMIC REDIRECT LOGIC ---
+        if (link.useSplashPage) {
+            // Option 1: Redirect to Frontend Splash Page
+            const frontendUrl = process.env.FRONTEND_URL;
+            if (!frontendUrl) {
+                console.error('FRONTEND_URL is not set in .env file');
+                return res.status(500).send('Server configuration error.');
+            }
+            
+            const params = new URLSearchParams({
+                to: link.redirectTo,
+                design: link.splashPageDesign,
+                duration: link.splashPageDuration.toString(),
+            });
+            
+            res.redirect(`${frontendUrl}/redirect?${params.toString()}`);
 
-        // 1. Get your frontend's base URL from environment variables
-        const frontendUrl = process.env.FRONTEND_URL;
-        if (!frontendUrl) {
-            console.error('FRONTEND_URL is not set in .env file');
-            return res.status(500).send('Server configuration error.');
+        } else {
+            // Option 2: Perform an Instant Redirect
+            res.redirect(302, link.redirectTo);
         }
-        
-        const frontendRedirectPage = `${frontendUrl}/redirect`;
-
-        // 2. URL-encode the final destination to ensure it's passed safely
-        const encodedDestination = encodeURIComponent(link.redirectTo);
-
-        // 3. Redirect the user to your frontend page with the destination as a query parameter
-        res.redirect(`${frontendRedirectPage}?to=${encodedDestination}`);
 
     } catch (error) {
         console.error(error);
@@ -76,20 +84,26 @@ export const handleRedirect = async (req: Request, res: Response) => {
 
 // @desc    Get all public links for "link-in-bio" page
 // @route   GET /api/public/links
-// NOTE: This function is already correct and requires no changes.
 export const getPublicLinks = async (req: Request, res: Response) => {
     try {
-        // For a single-user app, we find the first user (the admin)
         const admin = await prisma.user.findFirst();
         if (!admin) {
             return res.status(404).json({ error: 'Admin user not configured.' });
         }
 
+        const now = new Date();
         const links = await prisma.link.findMany({
             where: {
                 userId: admin.id,
                 visibility: 'PUBLIC',
                 isPaused: false,
+                // NEW: This ensures only currently active links appear on your public page
+                OR: [
+                    { activeFrom: null, activeUntil: null },
+                    { activeFrom: { lte: now }, activeUntil: null },
+                    { activeFrom: null, activeUntil: { gte: now } },
+                    { activeFrom: { lte: now }, activeUntil: { gte: now } },
+                ],
             },
             orderBy: { createdAt: 'asc' },
             select: { name: true, redirectTo: true, shortCode: true },

@@ -24,7 +24,8 @@ app.set('trust proxy', true);
 app.use(express.json());
 
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
+    // all origins are allowed for development
+    origin: '*',
 }));
 
 // --- PUBLIC ROUTES ---
