@@ -113,3 +113,26 @@ export const deleteBatch = async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+
+export const getTopBatches = async (req: Request, res: Response) => {
+    const userId = (req as any).user.id;
+    try {
+        const topBatches = await prisma.batch.findMany({
+            where: { userId },
+            include: {
+                _count: {
+                    select: { links: true },
+                },
+            },
+            orderBy: {
+                links: {
+                    _count: 'desc',
+                },
+            },
+            take: 3,
+        });
+        res.status(200).json(topBatches);
+    } catch (error) {
+        res.status(500).json({ error: 'Server error while fetching top batches.' });
+    }
+};

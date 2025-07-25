@@ -7,12 +7,13 @@ import ResetPasswordPage from '../pages/auth/ResetPasswordPage';
 import DashboardPage from '../pages/dashboard/DashboardPage'; 
 import AnalyticsPage from '../pages/analytics/AnalyticsPage';
 import LinksPage from '../pages/links/LinksPage';
+import SettingsPage from '../pages/settings/SettingsPage';
 
 import RedirectPage from '../pages/redirect/RedirectPage';
 import PublicProfilePage from '../pages/public/PublicProfilePage';
 
 // Placeholder Pages
-const SettingsPage = () => <h1 className="text-3xl font-bold">Settings</h1>;
+
 
 export const router = createBrowserRouter([
   // Public routes

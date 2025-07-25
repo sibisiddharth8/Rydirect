@@ -3,27 +3,70 @@ import { Prisma, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+const RESERVED_WORDS = [
+    'api', 'dashboard', 'links', 'analytics', 'settings', 'profile', 
+    'all', 'redirect', 'login', 'logout', 'forgot-password', 'reset-password'
+];
+
+const checkActiveDuplicate = async (
+  shortCode: string,
+  userId: string,
+  excludeLinkId: string | null = null
+) => {
+  const now = new Date();
+  const whereClause: any = {
+    shortCode,
+    userId,
+    isPaused: false,
+    OR: [
+      { activeFrom: null, activeUntil: null },
+      { activeFrom: { lte: now }, activeUntil: null },
+      { activeFrom: null, activeUntil: { gte: now } },
+      { activeFrom: { lte: now }, activeUntil: { gte: now } },
+    ],
+  };
+
+  if (excludeLinkId) {
+    whereClause.id = { not: excludeLinkId };
+  }
+
+  const existingActiveLink = await prisma.link.findFirst({ where: whereClause });
+  return existingActiveLink;
+};
+
+
 // @desc    Create a new link
 // @route   POST /api/links
 export const createLink = async (req: Request, res: Response) => {
     const userId = (req as any).user.id;
+    
+    // --- THIS IS THE FIX ---
+    // Destructure ALL required fields from the request body.
     const { 
         name, shortCode, redirectTo, batchId, visibility, isPaused,
         useSplashPage, splashPageDesign, 
         activeFrom, activeUntil, splashPageDuration 
     } = req.body;
 
-    // --- Start of new validation logic ---
+    if (shortCode.includes('/')) {
+        return res.status(400).json({ error: 'Short codes cannot contain slashes (/).' });
+    }
+
+    // Reserved Word Check
+    if (RESERVED_WORDS.includes(shortCode.toLowerCase())) {
+        return res.status(400).json({ error: `"${shortCode}" is a reserved word and cannot be used.` });
+    }
+
+    // Active Duplicate Check
     if (!isPaused) {
         const duplicate = await checkActiveDuplicate(shortCode, userId);
         if (duplicate) {
             return res.status(409).json({ error: 'Another link with this short code is already active.' });
         }
     }
-    // --- End of new validation logic ---
 
     try {
-        // Explicitly construct the data object with correct types
+        // This part is now correct because all variables are defined.
         const dataToSave: Prisma.LinkCreateInput = {
             user: { connect: { id: userId } },
             name,
@@ -49,7 +92,7 @@ export const createLink = async (req: Request, res: Response) => {
     }
 };
 
-// --- NEW, ROBUST updateLink FUNCTION ---
+// --- updateLink function (already correct) ---
 export const updateLink = async (req: Request, res: Response) => {
     const { id } = req.params;
     const userId = (req as any).user.id;
@@ -59,7 +102,14 @@ export const updateLink = async (req: Request, res: Response) => {
         activeFrom, activeUntil, splashPageDuration 
     } = req.body;
 
-    // Validation logic for active duplicates remains the same
+    if (shortCode.includes('/')) {
+        return res.status(400).json({ error: 'Short codes cannot contain slashes (/).' });
+    }
+
+    if (RESERVED_WORDS.includes(shortCode.toLowerCase())) {
+        return res.status(400).json({ error: `"${shortCode}" is a reserved word and cannot be used.` });
+    }
+
     if (!isPaused) {
         const duplicate = await checkActiveDuplicate(shortCode, userId, id);
         if (duplicate) {
@@ -68,7 +118,6 @@ export const updateLink = async (req: Request, res: Response) => {
     }
     
     try {
-        // Construct the data object for the update
         const dataToUpdate: Prisma.LinkUpdateInput = {
             name,
             shortCode,
@@ -80,12 +129,9 @@ export const updateLink = async (req: Request, res: Response) => {
             splashPageDuration: Number(splashPageDuration),
             activeFrom: activeFrom ? new Date(activeFrom) : null,
             activeUntil: activeUntil ? new Date(activeUntil) : null,
-            // The `connect` and `disconnect` logic works perfectly with `update()`
             ...(batchId ? { batch: { connect: { id: batchId } } } : { batch: { disconnect: true } }),
         };
 
-        // --- THE FIX: Use `update` instead of `updateMany` ---
-        // First, verify the link belongs to the user to prevent unauthorized edits.
         const linkToUpdate = await prisma.link.findFirst({
             where: { id, userId }
         });
@@ -94,7 +140,6 @@ export const updateLink = async (req: Request, res: Response) => {
             return res.status(404).json({ error: "Link not found or you don't have permission to edit it." });
         }
         
-        // Now, perform the update using the correct `update` method.
         await prisma.link.update({ 
             where: { id: id }, 
             data: dataToUpdate 
@@ -107,8 +152,7 @@ export const updateLink = async (req: Request, res: Response) => {
     }
 };
 
-// @desc    Get all links with search, filtering, and pagination
-// @route   GET /api/links
+// --- All other functions (getLinks, deleteLink, etc.) remain the same ---
 export const getLinks = async (req: Request, res: Response) => {
     const userId = (req as any).user.id;
     const { page = 1, limit = 10, search, batchId, visibility } = req.query;
@@ -146,8 +190,7 @@ export const getLinks = async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
-// @desc    Get a single link by ID
-// @route   GET /api/links/:id
+
 export const getLinkById = async (req: Request, res: Response) => {
     const { id } = req.params;
     const userId = (req as any).user.id;
@@ -165,8 +208,6 @@ export const getLinkById = async (req: Request, res: Response) => {
     }
 };
 
-// @desc    Update link status (pause/continue)
-// @route   PATCH /api/links/:id/status
 export const updateLinkStatus = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { isPaused } = req.body;
@@ -191,9 +232,6 @@ export const updateLinkStatus = async (req: Request, res: Response) => {
     }
 };
 
-
-// @desc    Delete a link
-// @route   DELETE /api/links/:id
 export const deleteLink = async (req: Request, res: Response) => {
     const { id } = req.params;
     const userId = (req as any).user.id;
@@ -241,30 +279,4 @@ export const bulkUpdateLinks = async (req: Request, res: Response) => {
     } catch (error) {
          res.status(500).json({ error: 'Server error during bulk action.' });
     }
-};
-
-const checkActiveDuplicate = async (
-  shortCode: string,
-  userId: string,
-  excludeLinkId: string | null = null
-) => {
-  const now = new Date();
-  const whereClause: any = {
-    shortCode,
-    userId,
-    isPaused: false,
-    OR: [
-      { activeFrom: null, activeUntil: null },
-      { activeFrom: { lte: now }, activeUntil: null },
-      { activeFrom: null, activeUntil: { gte: now } },
-      { activeFrom: { lte: now }, activeUntil: { gte: now } },
-    ],
-  };
-
-  if (excludeLinkId) {
-    whereClause.id = { not: excludeLinkId };
-  }
-
-  const existingActiveLink = await prisma.link.findFirst({ where: whereClause });
-  return existingActiveLink;
 };

@@ -1,7 +1,9 @@
 import { Router } from 'express';
-import { createBatch, getBatches, getBatchById, updateBatch, deleteBatch } from '../controllers/batch.controller';
+import { createBatch, getBatches, getBatchById, updateBatch, deleteBatch, getTopBatches } from '../controllers/batch.controller';
 
 const router = Router();
+
+router.get('/top', getTopBatches);
 
 router.route('/')
     .post(createBatch)

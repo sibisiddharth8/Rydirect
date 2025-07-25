@@ -24,3 +24,8 @@ export const updateBatch = async (id, batchData) => {
 export const deleteBatch = async (id) => {
   await api.delete(`/batches/${id}`);
 };
+
+export const getTopBatches = async () => {
+  const { data } = await api.get('/batches/top');
+  return data;
+};

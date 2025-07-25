@@ -14,3 +14,10 @@ export const resetPasswordWithOtp = async (payload) => {
   const { data } = await api.post('/auth/reset-password-otp', payload);
   return data;
 };
+
+export const changePassword = async (passwords) => {
+  // This function hits the protected route to change the password
+  // The auth token is added automatically by the axios interceptor
+  const { data } = await api.post('/auth/reset-password', passwords);
+  return data;
+};

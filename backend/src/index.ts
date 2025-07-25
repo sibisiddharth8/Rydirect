@@ -23,16 +23,17 @@ const PORT = process.env.PORT || 5000;
 app.set('trust proxy', true);
 app.use(express.json());
 
+// all origin CORS
 app.use(cors({
-    // all origins are allowed for development
-    origin: '*',
+    origin: "*"
 }));
 
-// --- PUBLIC ROUTES ---
-app.get('/:shortCode', handleRedirect);
+app.get('/all', (req, res) => {
+    res.redirect(`${process.env.FRONTEND_URL}/all`);
+});
+
 app.use('/api/public', publicRoutes);
 app.use('/api/auth', authRoutes);
-
 
 // --- PROTECTED ADMIN ROUTES ---
 app.use('/api/batches', protect, batchRoutes);
@@ -43,6 +44,8 @@ app.use('/api/utility', protect, utilityRoutes);
 app.use('/api/tags', protect, tagRoutes);
 app.use('/api/profile', protect, profileRoutes);
 
+// --- GENERIC REDIRECT HANDLER (Must be last) ---
+app.get('/:shortCode', handleRedirect);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
