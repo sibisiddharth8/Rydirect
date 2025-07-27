@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { Link as LinkIcon, Pause, Play, SkipForward, Info } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
-import { Pause, Play, SkipForward, Link as LinkIcon, Info } from 'lucide-react';
 
 const BrandedDesign = ({ destination, duration, user, publicLinks, link }) => {
   const [countdown, setCountdown] = useState(duration);
@@ -32,7 +32,7 @@ const BrandedDesign = ({ destination, duration, user, publicLinks, link }) => {
   };
 
   return (
-    <div className="w-full h-screen flex flex-col items-center justify-between p-6 sm:p-12 relative overflow-hidden bg-slate-100">
+    <div className="w-full min-h-screen flex flex-col items-center justify-center p-6 sm:p-12 relative overflow-hidden bg-slate-100">
       {/* Animated Gradient Background */}
       <div className="absolute inset-0 z-0 h-full w-full">
         <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-blue-300 rounded-full filter blur-3xl opacity-50 animate-blob"></div>
@@ -40,15 +40,15 @@ const BrandedDesign = ({ destination, duration, user, publicLinks, link }) => {
         <div className="absolute top-1/4 right-1/4 w-1/3 h-1/3 bg-purple-300 rounded-full filter blur-3xl opacity-50 animate-blob animation-delay-4000"></div>
       </div>
 
-      {/* Main Content Container */}
-      <div className="relative z-10 flex flex-col items-center justify-between h-full w-full max-w-3xl">
+      {/* Main Content Container - Uses gap for responsive spacing */}
+      <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-3xl text-center">
         
         {/* Header */}
         <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex flex-col items-center text-center"
+            className="flex flex-col items-center text-center py-8"
         >
           <img 
             src={user?.profileImageUrl || `https://ui-avatars.com/api/?name=${user?.name || 'S'}&background=3b82f6&color=fff&size=128`}
@@ -64,13 +64,12 @@ const BrandedDesign = ({ destination, duration, user, publicLinks, link }) => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="w-full text-center"
+            className="w-full text-center pb-8"
         >
             <div className="relative inline-block group">
                 <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-blue-700 break-words tracking-tight" style={{ textShadow: '0px 2px 5px rgba(0,0,0,0.1)' }}>
                     {domain}
                 </h2>
-                {/* Link Preview Feature */}
                 <div className="absolute -top-2 -right-8">
                     <Info size={20} className="text-slate-400 cursor-pointer" />
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max max-w-xs bg-slate-800 text-white text-xs rounded-md py-1 px-3 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
@@ -96,7 +95,7 @@ const BrandedDesign = ({ destination, duration, user, publicLinks, link }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
-            className="text-center"
+            className="text-center pb-8"
           >
               <p className="text-sm font-semibold text-slate-600 mb-4">Explore my other links</p>
               <div className="flex items-center justify-center flex-wrap gap-5">
@@ -119,11 +118,11 @@ const BrandedDesign = ({ destination, duration, user, publicLinks, link }) => {
               </div>
           </motion.div>
         )}
-      </div>
-              {/* copyrights */}
-        <div className="text-center text-sm text-slate-500 mt-8 fixed bottom-2 w-full">
-          <p>&copy; {new Date().getFullYear()} <span className='font-semibold'>Sibi Siddharth S</span>. All rights reserved.</p>
+        {/* Copyright */}
+        <div className="text-center text-xs text-slate-500 pt-8">
+          <p>&copy; {new Date().getFullYear()} <span className='font-semibold'>{user?.name || "Rydirect"}</span>. All rights reserved.</p>
         </div>
+      </div>
     </div>
   );
 };
