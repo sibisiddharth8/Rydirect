@@ -78,7 +78,7 @@ const UnlockPage = () => {
             <div className="absolute bottom-0 right-0 w-72 h-72 bg-indigo-300 rounded-full filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
         </div>
 
-        <div className="relative z-10 flex flex-col items-center justify-between h-full w-full max-w-3xl text-center py-8 sm:py-12">
+        <div className="relative z-10 flex flex-col items-center justify-center h-full w-full max-w-3xl text-center space-y-8 sm:py-12">
             
             {/* Header: Your Profile */}
             <motion.div 
