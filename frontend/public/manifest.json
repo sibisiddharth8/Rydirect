@@ -1,0 +1,41 @@
+{
+  "name": "Rydirect | Revolutionizing Links",
+  "short_name": "Rydirect",
+  "description": "Revolutionizing Links",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f1f5f9",
+  "theme_color": "#3b82f6",
+  "icons": [
+    {
+      "src": "/Rydirect Logo 192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/Rydirect Logo 256x256.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/Rydirect Logo 300x300.png",
+      "sizes": "300x300",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/Rydirect Logo 384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/Rydirect Logo 512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
