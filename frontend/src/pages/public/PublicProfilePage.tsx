@@ -5,6 +5,7 @@ import Loader from '../../components/ui/Loader';
 import { Link as LinkIcon } from 'lucide-react';
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim"; 
+import { Link } from 'react-router-dom';
 
 // A single "star" in our constellation
 const LinkStar = ({ link }) => {
@@ -118,7 +119,7 @@ const PublicProfilePage = () => {
 
         {/* The Link "Stars" */}
         <motion.div
-            className="w-full max-w-4xl mx-auto p-8 flex flex-wrap gap-y-12 gap-4"
+            className="w-full mx-auto p-6 flex flex-wrap justify-center gap-y-6 gap-3"
             initial="hidden"
             animate="visible"
             variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
@@ -127,6 +128,10 @@ const PublicProfilePage = () => {
                 <LinkStar key={link.id} link={link} />
             ))}
         </motion.div>
+      </div>
+      {/* copyrights */}
+      <div className="absolute bottom-0 left-0 right-0 text-center text-xs text-slate-500 py-4">
+        <p>© {new Date().getFullYear()} <Link to={"https://www.sibisiddharth.me"} target='_blank' className="font-semibold hover:underline cursor-pointer">Sibi Siddharth S</Link>. All rights reserved.</p>
       </div>
     </div>
   );
