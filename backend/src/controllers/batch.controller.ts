@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+import prisma from '../lib/prisma';
 
 // @desc    Create a new batch
 // @route   POST /api/batches

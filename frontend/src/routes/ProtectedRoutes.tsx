@@ -1,10 +1,19 @@
 import { Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import Loader from '../components/ui/Loader';
 
 const ProtectedRoutes = () => {
-  const token = localStorage.getItem('authToken');
+  const { isAuthenticated, loading } = useAuth();
 
-  // If there's a token, render the main Layout, otherwise redirect to login
-  return token ? <Outlet /> : <Navigate to="/login" replace />;
+  if (loading) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center bg-slate-50">
+        <Loader />
+      </div>
+    );
+  }
+
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoutes;

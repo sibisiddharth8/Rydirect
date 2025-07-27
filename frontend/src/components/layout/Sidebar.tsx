@@ -6,6 +6,8 @@ import {
   FiChevronsLeft, FiChevronsRight, FiLogOut, FiBox, FiX
 } from 'react-icons/fi';
 
+import RydirectLogo from '../../assets/Rydirect Logo 256x256.png';
+
 const navLinks = [
   { to: '/', icon: FiGrid, label: 'Dashboard' },
   { to: '/links', icon: FiLink, label: 'Links' },
@@ -65,8 +67,8 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }: SidebarProps)
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-white border-r border-slate-200">
-      <div className={`flex items-center h-16 px-4 border-b border-slate-200 flex-shrink-0 transition-all duration-300 ${shouldShowText ? 'justify-start gap-3' : 'justify-center'}`}>
-        <FiBox className="text-blue-600 w-7 h-7 flex-shrink-0" />
+      <div className={`cursor-pointer flex items-center h-16 px-4 border-b border-slate-200 flex-shrink-0 transition-all duration-300 ${shouldShowText ? 'justify-start gap-3' : 'justify-center'}`}>
+        <img src={RydirectLogo} alt="Rydirect Logo" className="w-10 h-10" />
         {shouldShowText && (<span className="text-xl font-bold text-slate-800 whitespace-nowrap">Rydirect</span>)}
         <button onClick={() => setSidebarOpen(false)} className="md:hidden text-slate-500 ml-auto"><FiX size={24} /></button>
       </div>
@@ -93,7 +95,7 @@ export default function Sidebar({ isSidebarOpen, setSidebarOpen }: SidebarProps)
               </button>
           </div>
           <div className="hidden md:flex justify-center p-4">
-            <button onClick={toggleCollapse} className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg" title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}>
+            <button onClick={toggleCollapse} className="cursor-pointer p-2 text-slate-500 hover:bg-slate-100 rounded-lg" title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}>
                 {isCollapsed ? <FiChevronsRight className="w-5 h-5" /> : <FiChevronsLeft className="w-5 h-5" />}
             </button>
           </div>

@@ -1,8 +1,11 @@
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
+import { twMerge } from 'tailwind-merge';
+// --- THIS IS THE FIX ---
+// Remove the 'ClassValue' type, as it's not needed.
+import clsx from 'clsx'; 
 
-// Define the props for our button
-interface ButtonProps extends React.ComponentPropsWithoutRef<typeof motion.button> {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger';
   isLoading?: boolean;
   children: React.ReactNode;
@@ -12,6 +15,7 @@ const Button = ({
   children, 
   variant = 'primary', 
   isLoading = false, 
+  className,
   ...props 
 }: ButtonProps) => {
   
@@ -25,12 +29,19 @@ const Button = ({
 
   const disabledClasses = "disabled:opacity-50 disabled:cursor-not-allowed";
 
+  const mergedClasses = twMerge(clsx(
+    baseClasses,
+    variantClasses[variant],
+    disabledClasses,
+    className
+  ));
+
   return (
     <motion.button
       whileHover={{ scale: isLoading || props.disabled ? 1 : 1.05 }}
       whileTap={{ scale: isLoading || props.disabled ? 1 : 0.95 }}
       disabled={isLoading || props.disabled}
-      className={`${baseClasses} ${variantClasses[variant]} ${disabledClasses} ${props.className || ''} cursor-pointer`}
+      className={mergedClasses}
       {...props}
     >
       {isLoading ? (

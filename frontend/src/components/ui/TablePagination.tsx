@@ -16,7 +16,7 @@ const TablePagination = ({ currentPage, totalPages, onPageChange, totalItems, li
         <button 
           onClick={() => onPageChange(currentPage - 1)} 
           disabled={currentPage === 1}
-          className="p-2 rounded-md hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="cursor-pointer p-2 rounded-md hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <ChevronLeft size={16} />
         </button>
@@ -24,7 +24,7 @@ const TablePagination = ({ currentPage, totalPages, onPageChange, totalItems, li
         <button 
           onClick={() => onPageChange(currentPage + 1)} 
           disabled={currentPage === totalPages || totalPages === 0}
-          className="p-2 rounded-md hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="cursor-pointer p-2 rounded-md hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <ChevronRight size={16} />
         </button>

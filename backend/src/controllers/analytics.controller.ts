@@ -1,15 +1,28 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+import prisma from '../lib/prisma';
+
+const getDateFilter = (period?: string) => {
+  const now = new Date();
+  if (period === '7d') {
+    return { gte: new Date(now.setDate(now.getDate() - 7)) };
+  }
+  if (period === '30d') {
+    return { gte: new Date(now.setMonth(now.getMonth() - 1)) };
+  }
+  return undefined; // 'all' or undefined
+};
 
 // @desc    Get click data grouped by date for a chart
 // @route   GET /api/analytics/clicks-over-time
 export const getClicksOverTime = async (req: Request, res: Response) => {
     const userId = (req as any).user.id;
+    const { period } = req.query;
+    const dateFilter = getDateFilter(period as string);
     try {
         const clicks = await prisma.click.findMany({
-            where: { link: { userId } },
+            where: { link: { userId }, clickedAt: dateFilter },
             orderBy: { clickedAt: 'asc' },
             select: { clickedAt: true },
         });
@@ -36,13 +49,15 @@ export const getClicksOverTime = async (req: Request, res: Response) => {
 // @route   GET /api/analytics/geo
 export const getGeoBreakdown = async (req: Request, res: Response) => {
     const userId = (req as any).user.id;
+    const { period } = req.query;
+    const dateFilter = getDateFilter(period as string);
     try {
         const geoData = await prisma.click.groupBy({
             by: ['country'],
-            where: { link: { userId }, country: { not: null } },
+            where: { link: { userId }, country: { not: null }, clickedAt: dateFilter },
             _count: { _all: true },
             orderBy: { _count: { id: 'desc' } },
-            take: 10,
+            take: 7,
         });
 
         const formattedData = geoData.map(item => ({
@@ -60,10 +75,12 @@ export const getGeoBreakdown = async (req: Request, res: Response) => {
 // @route   GET /api/analytics/referrers
 export const getReferrerBreakdown = async (req: Request, res: Response) => {
     const userId = (req as any).user.id;
+    const { period } = req.query;
+    const dateFilter = getDateFilter(period as string);
     try {
         const referrerData = await prisma.click.groupBy({
             by: ['referrer'],
-            where: { link: { userId }, referrer: { not: null } },
+            where: { link: { userId }, referrer: { not: null }, clickedAt: dateFilter },
             _count: { _all: true },
             orderBy: { _count: { id: 'desc' } },
             take: 10,

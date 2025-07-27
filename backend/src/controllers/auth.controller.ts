@@ -5,7 +5,7 @@ import * as jwt from 'jsonwebtoken';
 import { sendOtpEmail } from '../services/mail.service';
 import { generateOtp } from '../utils/generateOtp';
 
-const prisma = new PrismaClient();
+import prisma from '../lib/prisma';
 
 // @desc    Authenticate user and get token
 // @route   POST /api/auth/login

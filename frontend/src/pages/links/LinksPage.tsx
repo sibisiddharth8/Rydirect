@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, SlidersHorizontal, Trash2 } from 'lucide-react';
+import { Plus, SlidersHorizontal } from 'lucide-react';
 
 // Custom Hook
 import { useLinksData } from '../../hooks/useLinksData';
@@ -16,9 +16,6 @@ import CreateLinkModal from '../../components/links/CreateLinkModal';
 import ManageBatchesModal from '../../components/links/ManageBatchesModal';
 import QrCodeModal from '../../components/links/QrCodeModal';
 import Button from '../../components/ui/Button';
-import SearchInput from '../../components/ui/form/SearchInput';
-import FilterDropdown from '../../components/ui/form/FilterDropdown';
-import BatchCard from '../../components/links/BatchCard';
 
 const LinksPage = () => {
     const { data, pagination, loading, filters, setFilters, fetchData } = useLinksData();
@@ -68,7 +65,7 @@ const LinksPage = () => {
     };
 
     return (
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col min-h-full">
             <PageHeader title="Links">
                 <Button variant="secondary" onClick={() => setIsBatchModalOpen(true)}>
                     <SlidersHorizontal size={16} /> <span className='hidden sm:block'>Manage Batches</span>
@@ -78,48 +75,21 @@ const LinksPage = () => {
                 </Button>
             </PageHeader>
 
-            <div className="flex-shrink-0 rounded-lg">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <SearchInput 
-                            value={filters.search} 
-                            onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                        />
-                        <FilterDropdown 
-                            value={filters.batchId} 
-                            onChange={(e) => setFilters(prev => ({ ...prev, batchId: e.target.value }))}
-                            options={data.batches}
-                        />
-                    </div>
-                    <div>
-                        {selectedLinks.length > 0 ? (
-                            <div className="ml-2">
-                            <Button variant="danger" onClick={handleBulkDelete}>
-                                <Trash2 size={16} /> <span className='hidden sm:block'>Delete</span> ({selectedLinks.length})
-                            </Button>
-                            </div>
-                        ):<div></div>}
-                    </div>
-                </div>
-                {data.topBatches.length > 0 && selectedLinks.length === 0 && (
-                    <div className="flex items-center gap-3 mt-4 border-t border-slate-200 overflow-x-auto p-4">
-                        {data.topBatches.map(batch => (
-                            <BatchCard key={batch.id} batch={batch} onClick={(id) => setFilters(prev => ({ ...prev, search: '', batchId: prev.batchId === id ? '' : id }))} isActive={filters.batchId === batch.id} />
-                        ))}
-                    </div>
-                )}
-            </div>
-
             <LinksTable
                 links={data.links}
+                batches={data.batches}
+                topBatches={data.topBatches}
                 loading={loading}
                 selectedLinks={selectedLinks}
                 setSelectedLinks={setSelectedLinks}
                 pagination={pagination}
+                filters={filters}
+                onFilterChange={(key, value) => setFilters(prev => ({...prev, [key]: value}))}
                 onPageChange={(page) => fetchData(page)}
                 onQrCode={(shortCode) => { const baseUrl = import.meta.env.VITE_LINKS_BASE_URL || window.location.origin; setQrCodeLink(`${baseUrl}/${shortCode}`); }}
                 onEdit={(link) => { setEditingLink(link); setIsLinkModalOpen(true); }}
                 onDelete={handleDeleteLink}
+                onBulkDelete={handleBulkDelete}
                 onCreateLink={() => { setEditingLink(null); setIsLinkModalOpen(true); }}
             />
 
