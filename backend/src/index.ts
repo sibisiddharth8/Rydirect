@@ -35,11 +35,11 @@ console.log(`Serving static files from: ${uploadsPath}`);
 // --- API & Specific Page Routes ---
 app.use('/api/public', publicRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/utility', utilityRoutes);
 app.use('/api/batches', protect, batchRoutes);
 app.use('/api/links', protect, linkRoutes);
 app.use('/api/dashboard', protect, dashboardRoutes);
 app.use('/api/analytics', protect, analyticsRoutes);
-app.use('/api/utility', protect, utilityRoutes);
 app.use('/api/tags', protect, tagRoutes);
 app.use('/api/profile', protect, profileRoutes);
 app.use('/api/upload', protect, uploadRoutes);
