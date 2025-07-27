@@ -19,7 +19,7 @@ const Button = ({
   ...props 
 }: ButtonProps) => {
   
-  const baseClasses = "flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-md shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
+  const baseClasses = "cursor-pointer flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-md shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
   
   const variantClasses = {
     primary: 'text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500',
