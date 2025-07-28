@@ -133,7 +133,7 @@ const SettingsPage = () => {
                   <Input label="Name" name="name" value={profileData.name} onChange={handleProfileChange} />
                   <div>
                       <label htmlFor="bio" className="block text-sm font-medium text-slate-700 mb-1">Bio</label>
-                      <textarea id="bio" name="bio" rows={3} value={profileData.bio} onChange={handleProfileChange} className="p-2 block w-full rounded-lg border border-slate-300 shadow-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"></textarea>
+                      <textarea id="bio" name="bio" rows={5} value={profileData.bio} onChange={handleProfileChange} className="p-2 block w-full rounded-lg border border-slate-300 shadow-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"></textarea>
                   </div>
                   <div className="flex justify-end pt-6">
                     <Button type="submit" isLoading={isSavingProfile}>Save Profile</Button>
