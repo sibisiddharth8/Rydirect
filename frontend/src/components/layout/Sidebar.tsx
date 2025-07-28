@@ -26,7 +26,11 @@ const UserProfile = () => {
     return (
         <div className="flex items-center gap-3 px-4 py-3 border-b border-t border-slate-200">
             <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
-                {user.email.charAt(0).toUpperCase()}
+                {user.profileImageUrl ? (
+                    <img src={user.profileImageUrl} alt="Profile" className="w-full h-full rounded-full object-cover cursor-pointer" />
+                ) : (
+                    user.email.charAt(0).toUpperCase()
+                )}
             </div>
             <div className="min-w-0">
                 <p className="font-semibold text-slate-800 truncate">{user.email.split('@')[0]}</p>

@@ -25,7 +25,6 @@ const AnalyticsPage = () => {
         ]);
         setData({ clicks, geo, referrers });
       } catch (err) {
-        setError('Failed to load analytics data.');
         console.error(err);
       } finally {
         setLoading(false);
@@ -43,12 +42,12 @@ const AnalyticsPage = () => {
       <PageHeader title="Analytics">
       </PageHeader>
       <div className='flex sm:justify-end justify-center mb-4'>
-          <div className="w-fit flex bg-white p-1 rounded-lg shadow-sm border border-slate-200 items-center">
+          <div className="w-fit flex bg-white rounded-full p-1 shadow-sm border border-slate-200 items-center">
             {['7d', '30d', 'all'].map(p => (
                 <button
                     key={p}
                     onClick={() => setPeriod(p)}
-                    className={`cursor-pointer px-3 py-1 text-sm font-semibold rounded-md transition-colors ${
+                    className={`cursor-pointer px-3 py-2 rounded-full text-sm font-semibold transition-colors ${
                         period === p ? 'bg-blue-600 text-white shadow' : 'text-slate-600 hover:bg-slate-100'
                     }`}
                 >

@@ -86,7 +86,7 @@ const AuthLayout = ({ children }) => {
       </div>
       
       {/* Right Panel (Form Area) */}
-      <div className="flex items-center justify-center p-6 sm:p-12 z-100 bg-white/10 flex-1">
+      <div className="flex items-center justify-center p-2 sm:p-12 z-100 bg-white/10 flex-1">
         {children}
         {/* copyrights */}
         <div className="text-sm text-center text-slate-500 bottom-2 absolute">

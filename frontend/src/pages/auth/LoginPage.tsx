@@ -32,8 +32,8 @@ const LoginPage = () => {
 
   return (
     <AuthLayout>
-      <AuthCard title="Admin Login" subtitle="Welcome back, please sign in to continue.">
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <AuthCard title="Rydirect Login" subtitle="Welcome back, please sign in to continue.">
+        <form onSubmit={handleSubmit} className="space-y-7">
           <Input label="Email" name="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
           <PasswordInput label="Password" name="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
           
