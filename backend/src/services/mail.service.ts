@@ -5,7 +5,7 @@ import * as path from 'path';
 const transporter = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
   port: parseInt(process.env.MAIL_PORT || '587'),
-  secure: false, // true for 465, false for other ports
+  secure: false,
   auth: {
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS,
@@ -18,7 +18,7 @@ export const sendOtpEmail = async (to: string, otp: string) => {
   htmlContent = htmlContent.replace('{{otp}}', otp);
 
   const mailOptions = {
-    from: `"Your App Name" <${process.env.MAIL_USER}>`,
+    from: `"Rydirect" <${process.env.MAIL_USER}>`,
     to: to,
     subject: 'Your Password Reset OTP',
     html: htmlContent,

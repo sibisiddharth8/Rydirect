@@ -27,6 +27,7 @@ export const login = async (req: Request, res: Response) => {
 // @route   POST /api/auth/forgot-password
 export const forgotPassword = async (req: Request, res: Response) => {
     const { email } = req.body;
+    console.log('Request body received on server:', req.body);
     try {
         const user = await prisma.user.findUnique({ where: { email } });
         if (!user) {
@@ -45,6 +46,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
         await sendOtpEmail(email, otp);
         res.status(200).json({ message: 'OTP sent to your email' });
     } catch (error) {
+        console.error('Failed to send OTP email:', error); 
         res.status(500).json({ error: 'Error sending OTP' });
     }
 };

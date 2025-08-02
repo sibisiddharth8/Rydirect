@@ -18,6 +18,7 @@ const ForgotPasswordPage = () => {
     setMessage('');
     setError('');
     setIsSubmitting(true);
+    console.log('Sending this exact email to the backend:', email);
     try {
       await requestPasswordReset(email);
       setMessage('Success! OTP sent. Redirecting...');
